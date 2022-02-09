@@ -1,0 +1,170 @@
+version: "3.7"
+services:
+  varnish:
+    image: mrrkat/varnish
+    container_name: varnish
+    restart: always
+    ports:
+      - "80:80"
+      - "6085:6085"
+    environment:
+      - VARNISH_SIZE=2G
+    command: "-p default_keep=300"
+    volumes:
+      - "./conf/varnish/:/etc/varnish/"
+    depends_on:
+      - mysql-server
+    network_mode: host
+        #networks:
+        # - br_n      
+  nginx:
+    image: mrrkat/nginx
+    container_name: nginx
+    restart: always
+    network_mode: host
+    ports:
+      - "443:443"
+    volumes:
+      - "./www/:/var/www/html/"
+      - "./conf/vhost/:/etc/nginx/conf.d/"
+      - "./logs/nginx/:/var/log/nginx/"
+      - "./conf/ssl/:/etc/nginx/ssl/"
+    depends_on:
+      - mysql-server
+        #links:
+        #- php81
+        #- php73
+        #- php72
+        #- php74
+        #- php56
+        # networks:
+        #- br_n
+  php81:
+    image: mrrkat/php81-fpm
+    container_name: php81
+    restart: always
+    network_mode: host
+    depends_on:
+      - mysql-server
+    volumes:
+      - "./www/:/var/www/html/"
+      - "./conf/php_conf.d/:/usr/local/etc/php/conf.d/"
+  php74:
+    image: mrrkat/php74-fpm
+    container_name: php74
+    restart: always
+    network_mode: host
+    depends_on:
+      - mysql-server
+    volumes:
+      - "./www/:/var/www/html/"
+      - "./conf/php_conf.d/:/usr/local/etc/php/conf.d/"
+  php73:
+    image: mrrkat/php73-fpm
+    container_name: php73
+    restart: always
+    network_mode: host
+    depends_on:
+      - mysql-server
+    volumes:
+      - "./www/:/var/www/html/"
+      - "./conf/php_conf.d/:/usr/local/etc/php/conf.d/"
+  php72:
+    image: mrrkat/php72-fpm
+    container_name: php72
+    restart: always
+    network_mode: host
+    depends_on:
+      - mysql-server
+    volumes:
+    - "./www/:/var/www/html/"
+    - "./conf/php_conf.d/:/usr/local/etc/php/conf.d/"
+  php56:
+    image: mrrkat/php56-fpm
+    container_name: php56
+    restart: always
+    network_mode: host
+#    build:
+#      context: ./bin/php56/
+    restart: always
+    depends_on:
+      - mysql-server
+    volumes:
+    - "./www/:/var/www/html/"
+    - "./conf/php_conf.d/:/usr/local/etc/php/conf.d/"
+  elasticsearch:
+    image: mrrkat/elasticsearch-7.17
+    container_name: elasticsearch
+    restart: always
+    network_mode: host
+    environment:
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+      - "5601:5601"
+  opensearch:
+    image: mrrkat/opensearch-1.2
+    container_name: opensearch
+    restart: always
+    environment:
+      - bootstrap.memory_lock=true 
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536 # maximum number of open files for the OpenSearch user, set to at least 65536 on modern systems
+        hard: 65536
+    ports:
+      - "9400:9200"
+      - "9600:9600" # required for Performance Analyzer
+  rabbitmq:
+    image: mrrkat/rabbitmq-3.9
+    container_name: rabbitmq
+    restart: always
+    network_mode: host
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  mysql-server:
+    image: mrrkat/mysql-8.0
+    container_name: mysql
+    restart: always
+    network_mode: host
+    environment:
+      - MYSQL_ROOT_PASSWORD=luxinten
+      - MYSQL_DATABASE=magento1
+      - MYSQL_USER=magento
+      - MYSQL_PASSWORD=magento
+    volumes:
+      - ./data/db:/db/
+    ports:
+      - "127.0.0.1:3306:3306"
+  phpmyadmin:
+    image: mrrkat/phpmyadmin-5.0
+    container_name: phpmyadmin
+    restart: always
+    network_mode: host
+    environment:
+      - PMA_HOST=127.0.0.1
+      - PMA_USER=root
+      - PMA_PASSWORD=luxinten
+      - UPLOAD_LIMIT=512M
+    ports:
+      - "5000:80"
+  redis:
+    image: mrrkat/redis
+    container_name: redis
+    restart: always
+    network_mode: host
+    ports:
+      - "6379:6379"
