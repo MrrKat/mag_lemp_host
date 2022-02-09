@@ -142,7 +142,7 @@ services:
     network_mode: host
     environment:
       - MYSQL_ROOT_PASSWORD=luxinten
-      - MYSQL_DATABASE=magento1
+      - MYSQL_DATABASE=magento
       - MYSQL_USER=magento
       - MYSQL_PASSWORD=magento
     volumes:
