@@ -1,0 +1,27 @@
+set $documentRoot /var/www/html/;
+# set default php version to 74
+set $php_version 9074;
+
+if (-f $documentRoot/.php56) {
+  set $php_version 9056;
+}
+
+
+if (-f $documentRoot/.php72) {
+  set $php_version 9072;
+}
+
+
+if (-f $documentRoot/.php73) {
+  set $php_version 9073;
+}
+
+
+if (-f $documentRoot/.php74) {
+  set $php_version 9074;
+}
+
+if (-f $documentRoot/.php81) {
+  set $php_version 9081;
+}
+
