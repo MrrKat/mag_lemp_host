@@ -160,7 +160,7 @@ services:
       - PMA_PASSWORD=luxinten
       - UPLOAD_LIMIT=512M
     ports:
-      - "5000:80"
+      - "5000:5000"
   redis:
     image: mrrkat/redis
     container_name: redis
